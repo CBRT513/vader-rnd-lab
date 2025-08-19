@@ -1,0 +1,33 @@
+name: chatops-promote
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  promote:
+    if: github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/promote')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse command
+        id: parse
+        run: |
+          cmd="${{ github.event.comment.body }}"
+          target=$(echo "$cmd" | awk '{print $2}')
+          echo "target=$target" >> $GITHUB_OUTPUT
+      - name: Deploy (staging)
+        if: steps.parse.outputs.target == 'staging'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: ${{ secrets.FIREBASE_STAGING_PROJECT }}
+      - name: Deploy (prod)
+        if: steps.parse.outputs.target == 'prod'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: ${{ secrets.FIREBASE_PROD_PROJECT }}
