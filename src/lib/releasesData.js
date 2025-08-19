@@ -1,4 +1,4 @@
-export const releases = [
+export const seedReleases = [
   { version: '0.1.0', date: '2025-08-01', status: 'Beta',   notes: 'Initial R&D shell' },
   { version: '0.1.1', date: '2025-08-05', status: 'Beta',   notes: 'Router + pages' },
   { version: '0.2.0', date: '2025-08-10', status: 'Canary', notes: 'Theme toggle + Tailwind v4' },
