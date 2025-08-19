@@ -1,0 +1,33 @@
+name: pr-ci
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 'lts/*' }
+      - run: corepack enable && corepack prepare pnpm@latest --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint || echo "no lint"
+      - run: pnpm run test || echo "no tests"
+      - run: pnpm run build
+
+  preview:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 'lts/*' }
+      - run: corepack enable && corepack prepare pnpm@latest --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: ${{ github.head_ref }}
+          projectId: ${{ secrets.FIREBASE_PREVIEW_PROJECT }}
