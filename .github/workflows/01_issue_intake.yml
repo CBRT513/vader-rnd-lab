@@ -1,0 +1,25 @@
+name: issue-intake
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  intake:
+    if: contains(github.event.issue.labels.*.name, 'ready-for-ai')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 'lts/*' }
+      - run: corepack enable && corepack prepare pnpm@latest --activate
+      - run: pnpm install
+      - name: Generate spec & draft PR via AI
+        env:
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          AI_API_KEY:  ${{ secrets.AI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ai_orchestrator.mjs intake "${{ github.event.issue.number }}"
