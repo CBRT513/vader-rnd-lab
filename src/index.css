@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* --- Lab Font + Base --- */
+:root { font-family: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+/* Theme tokens (green is default) */
+:root, :root[data-theme="green"] {
+  --bg: #0b0f14;
+  --panel: #10161d;
+  --ink: #e6f4ff;
+  --muted: #92a3b3;
+  --accent: #39ff88;   /* neon green */
+  --accent-2: #38bdf8;
+}
+/* Amber theme */
+:root[data-theme="amber"] {
+  --accent: #ffd166;
+  --accent-2: #fca311;
+}
+
+html, body, #root { height: 100%; }
+body {
+  background: radial-gradient(1200px 600px at 10% -10%, #0e1520 0%, #0b0f14 45%, #080b0f 100%);
+  color: var(--ink);
+}
+
+/* Animated grid */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+  animation: grid-move 30s linear infinite;
+}
+@keyframes grid-move { from { transform: translateY(0px); } to { transform: translateY(24px); } }
+
+/* Reusable atoms */
+.navlink { @apply px-3 py-1 rounded-lg transition text-sm border border-transparent; color: var(--ink); }
+.navlink-active { background: color-mix(in oklab, var(--accent) 20%, transparent); border-color: color-mix(in oklab, var(--accent) 55%, transparent); text-shadow: 0 0 10px color-mix(in oklab, var(--accent) 70%, transparent); }
+.card { @apply rounded-2xl p-6; background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+.btn { @apply inline-flex items-center gap-2 rounded-xl border px-3 py-2 font-medium transition; border-color: rgba(255,255,255,0.09); background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00)); }
+.btn:hover { box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 25%, transparent), inset 0 0 12px color-mix(in oklab, var(--accent) 40%, transparent); }
+.footer-scan { position: relative; }
+.footer-scan::before { content: ""; position: absolute; inset: -20px 0 0 0; background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, transparent), transparent); filter: blur(22px); opacity: .35; pointer-events: none; }
